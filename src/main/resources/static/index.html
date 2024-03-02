@@ -2,14 +2,20 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Cadastro do usuário</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
+<style type="text/css">
+    html{
+    margin-left: 28%;
+    margin-right: 28%;
+    margin-top: 5%;
+    }
+</style>
 </head>
 <body>
-<h3>Cadastro de Usuario</h3>
-<form action="" id="formulario-cadastro-usuario">
+<h2 align="center">Cadastro de Usuario</h2>
+<form action="" id="formulario">
     <div class="mb-3">
         <label for="id" class="form-label">ID</label>
         <input type="text" class="form-control" id="id" readonly="readonly">
@@ -27,6 +33,50 @@
 </form>
 
 <button type="button" class="btn btn-primary" onclick="salvarUsuario()">Salvar</button>
+<button type="button" class="btn btn-secondary" onclick="document.getElementById('formulario').reset();">Novo</button>
+<button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalPesquisarUsuario">Pesquisar</button>
+<button type="button" class="btn btn-danger" onclick="botaoDeletar();">Deletar</button>
+
+<div class="modal fade" id="modalPesquisarUsuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Pesquisa de usuário</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="nameBusca" class="col-form-label">Informe o nome:</label>
+                        <input type="text" class="form-control" id="nameBusca">
+                        <br>
+                        <button type="button" class="btn btn-success" onclick="pesquisaUsuario();">Buscar</button>
+                    </div>
+                </form>
+
+                <div style="height: 310px; overflow scroll;">
+                <table class="table" id="tabelaResultados">
+                    <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Editar</th>
+                        <th scope="col">Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
@@ -34,25 +84,99 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
 <script type= "text/javascript">
-    function salvarUsuario(){
-    var id = $("#id").val();
-    var nome = $("#nome").val();
-    var idade = $("#idade").val();
 
-    $.ajax({
-    method: "POST",
-    url: "http://localhost:8080/sistema-de-cadastro/usuarios/salvar",
-    data: JSON.stringify({id : id, nome : nome, idade : idade}),
-    contentType: "application/json; charset=utf-8",
-    success: function(response){
-        alert("Usuário foi salvo com sucesso!")
+    function botaoDeletar(){
+        var id = $("#id").val();
+        if(id != null && id.trim() != ''){
+        deletarUsuario(id);
         }
-    }).fail(function (xhr, status, errorThrown){
-    alert("Erro ao salvar usuário " + xhr.responseText);
-    });
+        document.getElementById('formulario').reset();
+
+    }
 
 
+    function deletarUsuario(id){
+
+        if(confirm('Deseja realmente delatar?')){
+        $.ajax({
+          method: "DELETE",
+          url: "http://localhost:8080/sistema-de-cadastro/usuarios/deletar-usuario/" + encodeURIComponent(id),
+          success: function (response) {
+            $("#"+ id).remove();
+              alert(response);
+          },
+          error: function (xhr, status, errorThrown) {
+              alert("Erro ao buscar usuário " + xhr.responseText);
+          }
+      });
 }
+    }
+
+    function colocarEmEdicao(id) {
+      $.ajax({
+          method: "GET",
+          url: "http://localhost:8080/sistema-de-cadastro/usuarios/buscar-usuario/" + encodeURIComponent(id),
+          success: function (response) {
+              $("#id").val(response.id);
+              $("#nome").val(response.nome);
+              $("#idade").val(response.idade);
+
+              $("#modalPesquisarUsuario").modal('hide');
+          },
+          error: function (xhr, status, errorThrown) {
+              alert("Erro ao buscar usuário " + xhr.responseText);
+          }
+      });
+  }
+
+      function pesquisaUsuario() {
+
+      var nome = $("#nameBusca").val();
+      if (nome != null && nome.trim() != '') {
+          $.ajax({
+              method: "GET",
+              url: "http://localhost:8080/sistema-de-cadastro/usuarios/buscar-pelo-nome/" + encodeURIComponent(nome),
+              success: function (response) {
+                  $("#tabelaResultados > tbody > tr").remove();
+                  for (var i = 0; i < response.length; i++) {
+                      $("#tabelaResultados > tbody").append('<tr id="' + response[i].id + '"><td>' + response[i].id + '</td><td>' + response[i].nome + '</td><td><button type="button" class="btn btn-primary" onclick="colocarEmEdicao('+response[i].id+')" >visualizar</button></td><td><button type="button" class="btn btn-danger" onclick="deletarUsuario('+response[i].id+')">Delete</button></td></tr>');
+                  }
+              },
+              error: function (xhr, status, errorThrown) {
+                  alert("Erro ao buscar usuário " + xhr.responseText);
+              }
+          });
+      }
+  }
+
+  function salvarUsuario() {
+      var id = $("#id").val();
+      var nome = $("#nome").val();
+      var idade = $("#idade").val();
+
+      if(nome == null || nome != null && nome.trim() == ''  ){
+      $("#nome").focus();
+      alert('Informe o nome!');
+      return
+      }if(idade == null || idade != null && idade.trim() == ''  ){
+       $("#idade").focus();
+      alert('Informe a idade!');
+      return
+      }
+
+      $.ajax({
+          method: "POST",
+          url: "http://localhost:8080/sistema-de-cadastro/usuarios/salvar",
+          data: JSON.stringify({ id: id, nome: nome, idade: idade }),
+          contentType: "application/json; charset=utf-8",
+          success: function (response) {
+              $("#id").val(response.id);
+              alert("Usuário foi salvo com sucesso!");
+          },
+          error: function (xhr, status, errorThrown) {
+              alert("Erro ao salvar usuário " + xhr.responseText);
+          }
+      });
+  }
 </script>
-</body>
-</html>
+</body>  
