@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Locale;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -45,7 +44,7 @@ public class UsuarioController {
      return new ResponseEntity<Usuario>(usuario,HttpStatus.OK);
     }
 
-    @PutMapping("/atualizar-usurio")
+    @PutMapping("/atualizar-usuario")
     @ResponseBody
     public ResponseEntity<?> atualizar(@RequestBody Usuario usuario) {
         if(usuario.getId() == null){
@@ -55,11 +54,10 @@ public class UsuarioController {
         return new ResponseEntity<Usuario>(usuarioAtualizado, HttpStatus.OK);
     }
 
-    @GetMapping("/busca-pelo-nome/{nome}")
+    @GetMapping("/buscar-pelo-nome/{nome}")
     @ResponseBody
     public ResponseEntity<List<Usuario>> buscarUsuarioPeloNome (@PathVariable("nome") String nome){
         List<Usuario> usuarios = usuarioRepository.buscaPeloNome(nome.trim().toUpperCase());
         return new ResponseEntity<List<Usuario>>(usuarios,HttpStatus.OK);
     }
-
 }
