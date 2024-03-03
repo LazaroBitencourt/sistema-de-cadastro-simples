@@ -13,7 +13,6 @@ A API permite a execução das operações básicas de criação, leitura, atual
 - **Spring Data JPA:** Facilita o acesso a dados com o padrão de mapeamento objeto-relacional (ORM) para interação com o banco de dados.
 - **Banco de Dados:** Pode ser escolhido de acordo com as necessidades, como MySQL, PostgreSQL, H2 (para ambientes de desenvolvimento) etc.
 - **Maven:** Gerenciador de dependências utilizado para a construção do projeto.
-- **Swagger:** Ferramenta de documentação que facilita a compreensão e teste das APIs.
 
 ## Funcionalidades
 
@@ -26,14 +25,6 @@ A API permite a execução das operações básicas de criação, leitura, atual
 4. **Exclusão de Usuários:** Permite a remoção de um usuário do sistema.
 
 5. **Busca por Nome:** Recupera uma lista de usuários que contenham o nome fornecido na busca.
-
-## Documentação
-
-A documentação da API pode ser acessada através do Swagger, que fornece uma interface interativa para testar os endpoints e entender os parâmetros necessários para cada operação. Acesse [localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) após iniciar a aplicação.
-
-A aplicação estará disponível em [http://localhost:8080](http://localhost:8080).
-
-Lembre-se de configurar as informações do banco de dados no arquivo `application.properties` ou `application.yml` de acordo com a sua escolha de banco de dados.
 
 ## Considerações Finais
 
